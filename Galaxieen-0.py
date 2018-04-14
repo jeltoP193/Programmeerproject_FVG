@@ -63,16 +63,27 @@ if __name__ =="__main__":
 L = 0.3
 E = -0.2
 r_apo = 3.9281392510731887
+r_peri = 0.27794281273882032
 
-def IntegratieR(y, t, L):
-    r, v = y
-    dydt = [v, L**2/(r**3) + 1/(r+1)]
+T_r = radiele_periode(r_apo,r_peri,E,L)
+
+
+def IntegratieR(y, t, L, E):
+    r, v, theta = y
+    
+    if 2*E - (L/r)**2 + 2/(1+r) >= 0:
+        print("good")
+        dydt = [math.sqrt(2*E - (L/r)**2 + 2/(1+r))  , L**2/(r**3) + 1/((r+1)**2), L/(r**2)]
+    else:
+        print("Oh crap")
+        dydt = [0, L**2/(r**3) + 1/((r+1)**2), L/(r**2)]
     return dydt
 
-y0 = [0.27794281273882032, 0.0]
-t = np.linspace(0, 3.9281392510731887, 101)
+y0 = [0.6, 0.0, 0]
+t = np.linspace(0, 24, 101)
 
-sol = odeint(IntegratieR, y0, t, args=(L,))
+sol = odeint(IntegratieR, y0, t, args=(L, E))
+
 
 plt.plot(t, sol[:, 0], 'b', label='r(t)')
 plt.plot(t, sol[:, 1], 'g', label='v(t)')
