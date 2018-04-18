@@ -93,6 +93,22 @@ plt.grid()
 plt.show()
 
 
+# stap 4:
+
+r_max = 19 + 2 * math.sqrt(95)   # Omvat 95% van totale galaxiemassa
+stappenlijst = np.linspace(0, r_max, 300)
+
+
+# stap 5:
+
+massaToenameLijst = []
+for i in range(1, len(stappenlijst) ):
+    massaToenameLijst.append( massa(stappenlijst[i]) - massa(stappenlijst[i-1]))
+
+print(massaToenameLijst)
+
+
+
 '''
 Enkele testwaarden
 E=-0.2
