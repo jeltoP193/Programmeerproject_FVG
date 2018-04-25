@@ -5,6 +5,7 @@ import math
 from scipy import integrate
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
+import scipy.interpolate
 
 halveMassaStraal = 1+ math.sqrt(2)   
 
@@ -38,7 +39,7 @@ def omzetten_ongelijke_afstanden(r_apo,r_peri):
 def omzetten_gelijke_afstanden(straal):
     L = math.sqrt((straal**3)/((straal+1)**2))
     E = lambda L: -1/(straal+1) + (L)**2/(2*straal**2) #Code duplicatie op lijn 32 mogelijkheid om hulpfunctie te schrijven
-    return [E(L),L] 
+    return (E(L),L) 
     
 def test_apsidale_afstanden():
     # Allicht later libraries voor unit testen gebruiken
@@ -81,7 +82,6 @@ def IntegratieR(y, t, L, E):
 
 y0 = [0.6, 0.0, 0]
 t = np.linspace(0, 24, 101)
-
 sol = odeint(IntegratieR, y0, t, args=(L, E))
 
 
@@ -96,16 +96,20 @@ plt.show()
 # stap 4:
 
 r_max = 19 + 2 * math.sqrt(95)   # Omvat 95% van totale galaxiemassa
-stappenlijst = np.linspace(0, r_max, 300)
+stappenlijst, ELijst, LLijst = np.linspace(0, r_max, 300),[],[]
 
+for i in range(1, len(stappenlijst)): 
+    ELijst.append(omzetten_gelijke_afstanden(stappenlijst[i])[0])
+    LLijst.append(omzetten_gelijke_afstanden(stappenlijst[i])[1])
+    
+SPLINE = sc.interpolate.UnivariateSpline(ELijst, LLijst, w=None, bbox=[None, None], k=3, s=None, ext=0, check_finite=False)
 
 # stap 5:
 
 massaToenameLijst = []
 for i in range(1, len(stappenlijst) ):
-    massaToenameLijst.append( massa(stappenlijst[i]) - massa(stappenlijst[i-1]))
+    massaToenameLijst.append(massa(stappenlijst[i]) - massa(stappenlijst[i-1]))
 
-print(massaToenameLijst)
 
 
 
